@@ -196,7 +196,7 @@ def main():
         print("----------------------------------")
 
             # ===============================
-    #   ĐÁNH GIÁ TRÊN TOÀN BỘ TẬP TEST
+    #   ĐÁNH GIÁ TRÊN TOÀN BỘ TẬP TESTcc
     # ===============================
     print("\n===== ĐANG ĐÁNH GIÁ TRÊN TOÀN TẬP TEST =====")
 
