@@ -2,14 +2,14 @@ import os
 
 TRAIN_LABELS = r"/home/tudong/src/iam-dataset/train_labels.txt"
 VALID_LABELS = r"/home/tudong/src/iam-dataset/validation_labels.txt"
-TEST_LABELS = r"/home/tudong/src/iam-dataset/validation"
+TEST_LABELS = r"/home/tudong/src/iam-dataset/test_labels.txt"
 
 
 IMG_WIDTH = 1024
-IMG_HEIGHT = 48
+IMG_HEIGHT = 72
 
 # Tham số huấn luyện
-BATCH_SIZE = 8
+BATCH_SIZE = 4
 EPOCHS = 50
-LEARNING_RATE = 5e-5
+LEARNING_RATE = 1e-4
 MAX_LABEL_LENGTH = 128

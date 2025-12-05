@@ -145,11 +145,11 @@ def main():
     model.fit(
         train_ds,
         validation_data=valid_ds,
-        epochs=50,
+        epochs=10,
         callbacks=[checkpoint_cb, early_stop_cb]
     )
 
-    print("\n🎉 Fine-tuning hoàn tất!")
+    print("\n Fine-tuning hoàn tất!")
 
 
 if __name__ == "__main__":

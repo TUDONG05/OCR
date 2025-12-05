@@ -3,11 +3,11 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
-from src import config, data_loader, model as model_builder
+import config, data_loader, model as model_builder
 
 # 1. Cấu hình trang Web
 st.set_page_config(page_title="Nhận dạng chữ viết tay", page_icon="✍️")
-st.title("✍️ Ứng dụng Nhận dạng Chữ viết tay (OCR)")
+st.title(" Ứng dụng Nhận dạng Chữ viết tay (OCR)")
 st.write("Tải ảnh chứa dòng chữ viết tay lên để AI đọc nhé!")
 
 # 2. Hàm Load Model (Dùng cache để không phải load lại mỗi lần f5)

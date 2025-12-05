@@ -18,7 +18,7 @@ def main():
 
     train_img_paths, train_labels = data_loader.clean_labels(config.TRAIN_LABELS)
     valid_img_paths, valid_labels = data_loader.clean_labels(config.VALID_LABELS)
-    print(f"✔ Train: {len(train_img_paths)} | Val: {len(valid_img_paths)}")
+    print(f" Train: {len(train_img_paths)} | Val: {len(valid_img_paths)}")
 
     # Vocab & Dataset
     char_to_num, num_to_char = data_loader.build_vocabulary(train_labels + valid_labels)

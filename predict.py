@@ -78,6 +78,52 @@
 #     main()
 
 
+
+def cer(reference, hypothesis):
+    import numpy as np
+    ref = list(reference)
+    hyp = list(hypothesis)
+
+    d = np.zeros((len(ref)+1, len(hyp)+1), dtype=np.uint32)
+    for i in range(len(ref)+1):
+        d[i][0] = i
+    for j in range(len(hyp)+1):
+        d[0][j] = j
+
+    for i in range(1, len(ref)+1):
+        for j in range(1, len(hyp)+1):
+            cost = 0 if ref[i-1] == hyp[j-1] else 1
+            d[i][j] = min(
+                d[i-1][j] + 1,
+                d[i][j-1] + 1,
+                d[i-1][j-1] + cost
+            )
+    return d[len(ref)][len(hyp)] / max(1, len(ref))
+
+
+def wer(reference, hypothesis):
+    import numpy as np
+    ref = reference.split()
+    hyp = hypothesis.split()
+
+    d = np.zeros((len(ref)+1, len(hyp)+1), dtype=np.uint32)
+    for i in range(len(ref)+1):
+        d[i][0] = i
+    for j in range(len(hyp)+1):
+        d[0][j] = j
+
+    for i in range(1, len(ref)+1):
+        for j in range(1, len(hyp)+1):
+            cost = 0 if ref[i-1] == hyp[j-1] else 1
+            d[i][j] = min(
+                d[i-1][j] + 1,
+                d[i][j-1] + 1,
+                d[i-1][j-1] + cost
+            )
+    return d[len(ref)][len(hyp)] / max(1, len(ref))
+
+
+
 import os
 import tensorflow as tf
 import numpy as np
@@ -146,8 +192,44 @@ def main():
         print(f"Nhãn đúng: {true}")
         print(f"Model đọc: {pred_text}")
 
-        print("✔ Chính xác" if pred_text == true else "⚠ Sai")
+        # print("✔ Chính xác" if pred_text == true else "⚠ Sai")
         print("----------------------------------")
+
+            # ===============================
+    #   ĐÁNH GIÁ TRÊN TOÀN BỘ TẬP TEST
+    # ===============================
+    print("\n===== ĐANG ĐÁNH GIÁ TRÊN TOÀN TẬP TEST =====")
+
+    total_cer = 0
+    total_wer = 0
+    n = len(test_img_paths)
+
+    for i in range(n):
+        img_path = test_img_paths[i]
+        true = test_labels[i]
+
+        img = data_loader.preprocess_image(img_path)
+        img_batch = tf.expand_dims(img, axis=0)
+
+        preds = prediction_model.predict(img_batch, verbose=0)
+        pred_text = decode_batch_predictions(preds, num_to_char)[0]
+
+        # Cộng dồn CER & WER
+        total_cer += cer(true, pred_text)
+        total_wer += wer(true, pred_text)
+
+        # Có thể in tiến trình nếu dataset lớn:
+        if i % 200 == 0:
+            print(f"Đã xử lý {i}/{n} ảnh...")
+
+    avg_cer = total_cer / n
+    avg_wer = total_wer / n
+
+    print("\n===== KẾT QUẢ CUỐI CÙNG =====")
+    print(f" CER trung bình: {avg_cer:.4f}")
+    print(f"WER trung bình: {avg_wer:.4f}")
+    print("=====================================")
+
 
 
 if __name__ == "__main__":
