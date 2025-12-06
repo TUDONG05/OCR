@@ -13,24 +13,36 @@ st.write("Tải ảnh chứa dòng chữ viết tay lên để AI đọc nhé!")
 # 2. Hàm Load Model (Dùng cache để không phải load lại mỗi lần f5)
 @st.cache_resource
 def load_ocr_model():
-    # Load lại bộ từ điển
+    # load và build vocab
     train_labels = data_loader.clean_labels(config.TRAIN_LABELS)[1]
     valid_labels = data_loader.clean_labels(config.VALID_LABELS)[1]
     char_to_num, num_to_char = data_loader.build_vocabulary(train_labels + valid_labels)
-    
-    # Load model
-    model_path = "checkpoints/best_model.keras"
+
+    model_path = "/home/tudong/src/checkpoints/best_model.keras"
+
+    # load model (không compile để tránh ràng buộc optimizer)
     model = tf.keras.models.load_model(
-        model_path, 
-        custom_objects={"CTCLayer": model_builder.CTCLayer}
+        model_path,
+        custom_objects={"CTCLayer": model_builder.CTCLayer},
+        compile=False
     )
-    
-    # Tách lấy phần dự đoán (giống predict.py)
-    prediction_model = tf.keras.models.Model(
-        inputs=model.inputs[0], 
-        outputs=model.get_layer(name="dense_1").output
-    )
+
+    # Tìm layer output predictions (tên 'predictions' theo model bạn dùng)
+    try:
+        preds_layer = model.get_layer(name="predictions")
+    except Exception:
+        # fallback: lấy layer cuối cùng nếu tên khác
+        preds_layer = model.layers[-2]  # -1 thường là CTCLayer, -2 là dense/softmax
+
+    # Xác định input ảnh: model.inputs có thể là list [image, label]
+    # Lấy input đầu tiên (thông thường là image)
+    image_input = model.inputs[0]
+
+    # Tạo model inference: image -> softmax preds
+    prediction_model = tf.keras.models.Model(inputs=image_input, outputs=preds_layer.output)
+
     return prediction_model, num_to_char
+
 
 # 3. Hàm giải mã kết quả
 def decode_batch_predictions(pred, num_to_char):
