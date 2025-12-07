@@ -1,4 +1,4 @@
-# Nhận diện chữ viết tay 
+# Nhận diện chữ viết tay(Optical Character Recognition)
 
 
 # 1. Giới thiệu
