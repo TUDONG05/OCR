@@ -10,6 +10,7 @@
 
 # 3. Train model bằng cách chạy train.py
  ( Trước đó nhớ sửa lại các đường dẫn trong file config.py, predict.py nếu chạy bị lỗi) 
+ ## Đã có sẵn model đã được train, có thể chạy website luôn!
 
 # 4. Đánh giá
  Chạy predict.py để đánh giá ngẫu nhiên và tính WER , CER cả bộ 
