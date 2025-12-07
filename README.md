@@ -1,21 +1,94 @@
 # Nhận diện chữ viết tay 
-![alt text](image.png)
-# 1. Clone code về /home(mở terminal)
 
- `git clone https://github.com/TUDONG05/OCR.git`
 
-# 2. Chạy download_data.py để tải dữ liệu IAM
+# 1. Giới thiệu
+Model nhận dạng chữ viết tay  
+Tập dữ liệu : IAM
+Link
 
- `python download_data.py`
+# 2. Cấu trúc thư mục
+src/  
+├── __pycache__/  
+├── checkpoints/  
+├── iam-dataset/ 
+├── __init__.py  
+├── .gitignore  
+├── app.py  
+├── check.py  
+├── config.py  
+├── data_loader.py  
+├── download_data.py  
+├── fine_tune.py  
+├── image.png  
+├── model.py  
+├── requirement.txt  
+├── README.md  
+├── test.py  
+├── train.py  
+└── visualization.py  
 
-# 3. Train model bằng cách chạy train.py
- ( Trước đó nhớ sửa lại các đường dẫn trong file config.py, predict.py nếu chạy bị lỗi) 
- ## Đã có sẵn model đã được train, có thể chạy website luôn!
+# 3. Cách cài đặt  
+1. Tạo môi trường ảo (nếu cần)
 
-# 4. Đánh giá
- Chạy predict.py để đánh giá ngẫu nhiên và tính WER , CER cả bộ 
+        conda create -n ocr python=3.10
 
- `python predict.py` 
+        conda activate ocr
+
+2. Clone code về /home(mở terminal)
+
+        git clone https://github.com/TUDONG05/OCR.git
+
+3. Chạy download_data.py để tải dữ liệu IAM
+
+        python download_data.py
+4. Train model bằng cách chạy train.py
+( Trước đó nhớ sửa lại các đường dẫn trong file config.py, predict.py nếu chạy bị lỗi)   
+
+        python train.py
+
+    Đã có sẵn model đã được train, có thể chạy website luôn!
+
+5. Đánh giá
+    Chạy predict.py để đánh giá ngẫu nhiên và tính WER , CER cả bộ 
+
+        python predict.py
  
-# 5. Chạy website
-`streamlit run app.py`
+
+6. Chạy website
+
+        streamlit run app.py
+# 4. Dataset  
+Bộ dữ liệu IAM  
+Link: https://huggingface.co/datasets/Teklia/IAM-line  
+
+
+# 5. Kết quả   
+
+![alt text](image-1.png)
+![alt text](image-2.png)
+
+    WER: 0,1724  
+    CER: 0,4587 
+
+
+Training 8 epochs với tốc độ học 10^4 
+![alt text](image-3.png)  
+
+Fine tune 9 epochs với tốc độ học 10^5
+![alt text](image-4.png)
+
+6. Công nghệ sử dụng
+    - Python
+    - TensorFlow / PyTorch
+    - OpenCV
+    - NumPy  
+
+7. Môi trường triển khai   
+
+- Hệ điều hành: Ubuntu 24.04 (remote WSL)
+- Python: 3.13.9
+- Tensorflow: 2.20
+- CUDA: 12.4
+- Framework: TensorFlow 2.13
+- GPU: NVIDIA RTX 3050
+- Driver NVIDIA: 551.86
