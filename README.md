@@ -64,18 +64,21 @@ Link: https://huggingface.co/datasets/Teklia/IAM-line
 
 # 5. Kết quả   
 
-![alt text](image-1.png)
+![alt text](image-1.png)  
+-----------------------------------
 ![alt text](image-2.png)
 
     WER: 0,1724  
     CER: 0,4587 
 
+Training 19 epochs với tốc độ học 10^4 
+![alt text](image-5.png)
 
-Training 8 epochs với tốc độ học 10^4 
-![alt text](image-3.png)  
+Fine tune lần 1 (8 epochs) với tốc độ học 10^5
+![alt text](image-6.png)
 
-Fine tune 9 epochs với tốc độ học 10^5
-![alt text](image-4.png)
+Fine tune lần 2 (9 epochs) với tốc độ học 10^5
+![alt text](image-7.png)
 
 6. Công nghệ sử dụng
     - Python

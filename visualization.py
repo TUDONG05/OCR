@@ -1,6 +1,27 @@
 import matplotlib.pyplot as plt
 
 epochs = [1, 2, 3, 4, 5, 6, 7, 8,9]
+# loss = [717.331,
+# 422.692,
+# 295.225,
+# 239.055,
+# 204.749,
+# 179.572,
+# 162.948,
+# 148.026,
+# 135.625,
+# 12.5279,
+# 11.6051,
+# 10.8683,
+# 10.1975,
+# 9.5682,
+# 9.0570,
+# 8.4601,
+# 8.0543,
+# 7.6504,
+# 7.3074]
+
+
 # loss = [10.0503, 8.4629, 7.9895, 7.5291, 7.2383, 7.0745, 6.9181, 6.5203]
 loss = [ 7.6279,
 7.3075,
@@ -13,7 +34,7 @@ loss = [ 7.6279,
 6.0887]
 
 plt.plot(epochs, loss, marker='o')
-plt.title("Fine tune 9 epoch với learning rate = 1e-5")
+plt.title("Fine tune lần 2 (9 epochs) với tốc độ học 10^5")
 plt.xlabel("Epoch")
 plt.ylabel("Loss")
 plt.grid(True)
