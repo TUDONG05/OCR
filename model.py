@@ -105,7 +105,7 @@ def build_model(vocab_size):
     x = input_img
 
     # -------------------------------
-    # 🔥 6 LỚP CNN (ĐÚNG CHUẨN)
+    #  6 LỚP CNN 
     # -------------------------------
 
     # Block 1
@@ -124,7 +124,7 @@ def build_model(vocab_size):
     x = layers.MaxPooling2D((2, 1))(x)
 
     # -------------------------------
-    # 🔥 RESHAPE → TIME STEPS
+    #  RESHAPE → TIME STEPS
     # -------------------------------
     shape = x.shape
     new_w = shape[1]
@@ -135,13 +135,13 @@ def build_model(vocab_size):
     x = layers.Dropout(0.25)(x)
 
     # -------------------------------
-    # 🔥 BI-LSTM (256 → 128)
+    #  BI-LSTM (256 → 128)
     # -------------------------------
     x = layers.Bidirectional(layers.LSTM(256, return_sequences=True, dropout=0.25))(x)
     x = layers.Bidirectional(layers.LSTM(128, return_sequences=True, dropout=0.25))(x)
 
     # -------------------------------
-    # 🔥 OUTPUT
+    #  OUTPUT
     # -------------------------------
     x = layers.Dense(vocab_size + 1, activation="softmax", name="predictions")(x)
 

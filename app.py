@@ -6,7 +6,7 @@ from PIL import Image
 import config, data_loader, model as model_builder
 
 # 1. Cấu hình trang Web
-st.set_page_config(page_title="Nhận dạng chữ viết tay", page_icon="✍️")
+st.set_page_config(page_title="Nhận dạng chữ viết tay", page_icon="")
 st.title(" Ứng dụng Nhận dạng Chữ viết tay (OCR)")
 st.write("Tải ảnh chứa dòng chữ viết tay lên để AI đọc nhé!")
 
@@ -97,7 +97,7 @@ try:
                 pred_text = decode_batch_predictions(preds, num_to_char)[0]
                 
                 # Hiện kết quả to đẹp
-                st.markdown("### 🎯 Kết quả:")
+                st.markdown("###  Kết quả:")
                 st.code(pred_text, language="text")
 
 except Exception as e:
