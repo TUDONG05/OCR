@@ -1,4 +1,5 @@
 # Nhận diện chữ viết tay 
+![alt text](image.png)
 # 1. Clone code về /home(mở terminal)
 
  `git clone https://github.com/TUDONG05/OCR.git`
