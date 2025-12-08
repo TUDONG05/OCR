@@ -68,8 +68,8 @@ Link: https://huggingface.co/datasets/Teklia/IAM-line
 -----------------------------------
 ![alt text](image-2.png)
 
-    WER: 0,1724  
-    CER: 0,4587 
+    CER: 0,1724  
+    WER: 0,4587 
 
 Training 19 epochs với tốc độ học 10^4 
 ![alt text](image-5.png)
