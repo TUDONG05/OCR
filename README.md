@@ -6,11 +6,12 @@ Mô hình nhận dạng chữ viết tay dựa trên CNN - RNN - CTC.
 # 2. Cấu trúc thư mục
 src/  
 ├── __pycache__/  
-├── checkpoints/├── best_model.keras  
-├── iam-dataset├── test  
-├              ├── train
-├              ├── validation
-├
+├── checkpoints/  
+│   └── best_model.keras  
+├── iam-dataset/  
+│   ├── test/  
+│   ├── train/  
+│   └── validation/  
 ├── __init__.py  
 ├── .gitignore  
 ├── app.py  
