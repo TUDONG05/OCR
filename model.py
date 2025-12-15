@@ -65,9 +65,9 @@ def build_model(vocab_size):
     # -------------------------------
     #  RESHAPE → TIME STEPS
     # -------------------------------
-    shape = x.shape
+    shape = x.shape #[B,H,W,C]
     new_w = shape[1]
-    new_features = shape[2] * shape[3]
+    new_features = shape[2] * shape[3] 
     x = layers.Reshape((new_w, new_features))(x)
 
     x = layers.Dense(256, activation="relu")(x)

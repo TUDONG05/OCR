@@ -24,7 +24,7 @@ def export_split(split_name, split_data):
     label_file = os.path.join(output_root, f"{split_name}_labels.txt")
     f = open(label_file, "w", encoding="utf-8")
 
-    print(f"\n🔹 Exporting split: {split_name} ...")
+    print(f"\n Exporting split: {split_name} ...")
 
     for i, item in enumerate(split_data):
         img_pil = item["image"]       # PIL image
@@ -52,5 +52,5 @@ export_split("train", ds["train"])
 export_split("validation", ds["validation"])
 export_split("test", ds["test"])
 
-print("\n🎉 All splits exported successfully!")
+print("\n All splits exported successfully!")
 print(f" Folder: {output_root}")

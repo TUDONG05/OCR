@@ -63,10 +63,6 @@ def process_images_labels(image_path, label, char_to_num):
 def prepare_dataset(image_paths, labels, char_to_num):
     dataset = tf.data.Dataset.from_tensor_slices((image_paths, labels))
     dataset = dataset.map(lambda x, y: process_images_labels(x, y, char_to_num), num_parallel_calls=tf.data.AUTOTUNE)
-    
-    # --- PHẦN ĐÃ SỬA ---
-    # Sử dụng padded_batch thay vì batch thường
-    # padded_shapes: Image cố định kích thước, Label thì để None (tự động co giãn)
     dataset = dataset.padded_batch(
         config.BATCH_SIZE,
         padded_shapes={
@@ -75,7 +71,7 @@ def prepare_dataset(image_paths, labels, char_to_num):
         },
         padding_values={
             "image": 0.0,
-            "label": tf.cast(0, tf.int64) # Điền số 0 vào chỗ trống của nhãn
+            "label": tf.cast(0, tf.int64) 
         }
     ).prefetch(buffer_size=tf.data.AUTOTUNE)
     # -------------------
