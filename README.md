@@ -81,13 +81,13 @@ Fine tune lần 1 (8 epochs) với tốc độ học 10^5
 Fine tune lần 2 (9 epochs) với tốc độ học 10^5
 ![alt text](image-7.png)
 
-6. Công nghệ sử dụng
+# 6. Công nghệ sử dụng
     - Python
     - TensorFlow / PyTorch
     - OpenCV
     - NumPy  
 
-7. Môi trường triển khai   
+# 7. Môi trường triển khai   
 
 - Hệ điều hành: Ubuntu 24.04 (remote WSL)
 - Python: 3.13.9
@@ -97,7 +97,7 @@ Fine tune lần 2 (9 epochs) với tốc độ học 10^5
 - GPU: NVIDIA RTX 3050
 - Driver NVIDIA: 551.86
 
-8. Tác giả
+# 8. Tác giả
 
 - Đồng Văn Tú 2023601350
 - Nguyễn Viết Minh 2023601944
