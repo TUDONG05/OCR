@@ -96,3 +96,10 @@ Fine tune lần 2 (9 epochs) với tốc độ học 10^5
 - Framework: TensorFlow 2.13
 - GPU: NVIDIA RTX 3050
 - Driver NVIDIA: 551.86
+
+8. Tác giả
+
+- Đồng Văn Tú 2023601350
+- Nguyễn Viết Minh 2023601944
+- Cao Trường Thịnh 2023601330
+- Phạm Minh Hoàng 2023601883
