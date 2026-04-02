@@ -14,7 +14,7 @@ IMG_WIDTH = 1024
 IMG_HEIGHT = 72
 
 # Tham số huấn luyện
-BATCH_SIZE = 32        # Fix: batch=1 phá hỏng BatchNormalization
+BATCH_SIZE = 8         # RTX 3050 Laptop chỉ có ~1.77GB VRAM, input 1024×72 rất lớn
 EPOCHS = 50
-LEARNING_RATE = 1e-3   # OneCycle sẽ tự điều chỉnh xuống
+LEARNING_RATE = 1e-3
 MAX_LABEL_LENGTH = 128

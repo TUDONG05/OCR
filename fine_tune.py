@@ -19,8 +19,6 @@ def main():
         except RuntimeError:
             pass
 
-    tf.keras.mixed_precision.set_global_policy("mixed_float16")
-
     print("Đang load dữ liệu để Fine-tune...")
 
     # 2. Load dataset (augmentation bật cho train)

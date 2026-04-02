@@ -13,8 +13,8 @@ def main():
         except RuntimeError:
             pass
 
-    # Mixed precision (fp16) — giảm VRAM ~40%, tăng tốc trên RTX 3050
-    tf.keras.mixed_precision.set_global_policy("mixed_float16")
+    # KHÔNG dùng mixed precision — RTX 3050 Laptop không có AVX-512,
+    # oneDNN fallback về CPU làm tốn thêm VRAM thay vì tiết kiệm.
 
     # Load Data
     print("Đang đọc dữ liệu...")
