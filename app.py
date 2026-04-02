@@ -1,105 +1,112 @@
 
+import time
 import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
+import keras
+keras.config.enable_unsafe_deserialization()
 import config, data_loader, model as model_builder
 
-# 1. Cấu hình trang Web
-st.set_page_config(page_title="Nhận dạng chữ viết tay", page_icon="")
-st.title(" Ứng dụng Nhận dạng Chữ viết tay (OCR)")
-st.write("Tải ảnh chứa dòng chữ viết tay lên để AI đọc nhé!")
+st.set_page_config(page_title="Nhận dạng chữ viết tay", page_icon="✍️", layout="wide")
 
-# 2. Hàm Load Model (Dùng cache để không phải load lại mỗi lần f5)
+
 @st.cache_resource
 def load_ocr_model():
-    # load và build vocab
     train_labels = data_loader.clean_labels(config.TRAIN_LABELS)[1]
     valid_labels = data_loader.clean_labels(config.VALID_LABELS)[1]
     char_to_num, num_to_char = data_loader.build_vocabulary(train_labels + valid_labels)
 
-    model_path = "/home/tudong/src/checkpoints/best_model.keras"
-
-    # load model (không compile để tránh ràng buộc optimizer)
     model = tf.keras.models.load_model(
-        model_path,
+        config.CHECKPOINT_PATH,
         custom_objects={"CTCLayer": model_builder.CTCLayer},
         compile=False
     )
 
-    # Tìm layer output predictions (tên 'predictions' theo model bạn dùng)
     try:
         preds_layer = model.get_layer(name="predictions")
     except Exception:
-        # fallback: lấy layer cuối cùng nếu tên khác
-        preds_layer = model.layers[-2]  # -1 thường là CTCLayer, -2 là dense/softmax
+        preds_layer = model.layers[-2]
 
-    # Xác định input ảnh: model.inputs có thể là list [image, label]
-    # Lấy input đầu tiên (thông thường là image)
-    image_input = model.inputs[0]
-
-    # Tạo model inference: image -> softmax preds
-    prediction_model = tf.keras.models.Model(inputs=image_input, outputs=preds_layer.output)
-
+    prediction_model = tf.keras.models.Model(
+        inputs=model.inputs[0],
+        outputs=preds_layer.output
+    )
     return prediction_model, num_to_char
 
 
-# 3. Hàm giải mã kết quả
-def decode_batch_predictions(pred, num_to_char):
+def decode_predictions(pred, num_to_char, beam_width=100):
+    """Beam Search decode — chính xác hơn greedy."""
     input_len = np.ones(pred.shape[0]) * pred.shape[1]
-    results = tf.keras.backend.ctc_decode(pred, input_length=input_len, greedy=True)[0][0][:, :config.MAX_LABEL_LENGTH]
-    output_text = []
-    for res in results:
-        res = tf.strings.reduce_join(num_to_char(res)).numpy().decode("utf-8")
-        # Lọc bỏ ký tự lạ
-        res = res.replace("[UNK]", "").strip() 
-        output_text.append(res)
-    return output_text
+    results = tf.keras.backend.ctc_decode(
+        pred,
+        input_length=input_len,
+        greedy=False,
+        beam_width=beam_width
+    )[0][0][:, :config.MAX_LABEL_LENGTH]
+    texts = []
+    for r in results:
+        text = tf.strings.reduce_join(num_to_char(r)).numpy().decode("utf-8")
+        texts.append(text.replace("[UNK]", "").strip())
+    return texts
 
-# 4. Hàm xử lý ảnh từ Upload
-def process_uploaded_image(image):
-    # Chuyển sang ảnh xám
+
+def process_uploaded_image(image: Image.Image):
+    """Áp dụng đúng preprocessing như lúc training."""
     image = image.convert("L")
-    # Chuyển thành mảng số
-    image = tf.keras.preprocessing.image.img_to_array(image)
-    # Resize theo đúng chuẩn training (Hàm này lấy từ data_loader)
-    image = data_loader.distortion_free_resize(image, (config.IMG_WIDTH, config.IMG_HEIGHT))
-    # Chuẩn hóa về 0-1
-    image = tf.cast(image, tf.float32) / 255.0
-    # Thêm chiều batch (1, 1024, 32, 1)
-    image = tf.expand_dims(image, axis=0)
-    return image
+    img_array = tf.keras.preprocessing.image.img_to_array(image)
+    img_array = data_loader.distortion_free_resize(img_array, (config.IMG_WIDTH, config.IMG_HEIGHT))
+    img_array = tf.cast(img_array, tf.float32) / 255.0
+    return tf.expand_dims(img_array, axis=0)
 
-# --- GIAO DIỆN CHÍNH ---
+
+# ── Sidebar ────────────────────────────────────────────────────────────────
+with st.sidebar:
+    st.header("⚙️ Cấu hình")
+    beam_width = st.slider("Beam width (cao hơn = chính xác hơn, chậm hơn)", 1, 200, 100, step=10)
+    st.caption(f"Model: `{config.CHECKPOINT_PATH}`")
+    st.caption(f"Input: {config.IMG_WIDTH}×{config.IMG_HEIGHT}px (grayscale)")
+
+# ── Main ───────────────────────────────────────────────────────────────────
+st.title("✍️ Nhận dạng chữ viết tay (OCR)")
+st.write("Upload ảnh chứa **một dòng chữ viết tay** để AI nhận diện.")
 
 try:
-    # Load model ngay khi vào web
-    with st.spinner("Đang khởi động AI... Đợi chút nhé!"):
-        model, num_to_char = load_ocr_model()
-    st.success("AI đã sẵn sàng!")
+    with st.spinner("Đang khởi động model..."):
+        prediction_model, num_to_char = load_ocr_model()
+    st.success("Model sẵn sàng!", icon="✅")
 
-    # Nút upload file
-    uploaded_file = st.file_uploader("Chọn ảnh (PNG, JPG)", type=["png", "jpg", "jpeg"])
+    uploaded_file = st.file_uploader("Chọn ảnh (PNG / JPG / JPEG)", type=["png", "jpg", "jpeg"])
 
     if uploaded_file is not None:
-        # Hiển thị ảnh gốc
         image = Image.open(uploaded_file)
-        st.image(image, caption="Ảnh bạn vừa tải lên", use_container_width=True)
+        col1, col2 = st.columns(2)
 
-        # Nút bấm Dự đoán
-        if st.button("Đọc chữ trong ảnh"):
-            with st.spinner("AI đang đọc..."):
-                # Xử lý ảnh
-                processed_img = process_uploaded_image(image)
-                
-                # Dự đoán
-                preds = model.predict(processed_img)
-                pred_text = decode_batch_predictions(preds, num_to_char)[0]
-                
-                # Hiện kết quả to đẹp
-                st.markdown("###  Kết quả:")
-                st.code(pred_text, language="text")
+        with col1:
+            st.subheader("Ảnh gốc")
+            st.image(image, use_container_width=True)
 
+        with col2:
+            st.subheader("Ảnh sau tiền xử lý (32px height)")
+            preview = image.convert("L").resize(
+                (config.IMG_WIDTH, config.IMG_HEIGHT), Image.LANCZOS
+            )
+            st.image(preview, use_container_width=True, clamp=True)
+
+        if st.button("🔍 Nhận diện chữ", type="primary"):
+            with st.spinner("Đang phân tích..."):
+                t0 = time.time()
+                processed = process_uploaded_image(image)
+                preds = prediction_model.predict(processed, verbose=0)
+                pred_text = decode_predictions(preds, num_to_char, beam_width=beam_width)[0]
+                elapsed = time.time() - t0
+
+            st.markdown("### 📝 Kết quả:")
+            st.code(pred_text if pred_text else "(không nhận diện được)", language="text")
+            st.caption(f"Thời gian xử lý: {elapsed:.3f}s | Beam width: {beam_width}")
+
+except FileNotFoundError as e:
+    st.error(str(e))
+    st.info("Hãy chạy `python train.py` trước để tạo file checkpoint.")
 except Exception as e:
-    st.error(f"Có lỗi xảy ra: {e}")
-    st.warning("Hãy chắc chắn bạn đã chạy train.py xong và có file 'checkpoints/best_model.keras' nhé!")
+    st.error(f"Lỗi: {e}")
