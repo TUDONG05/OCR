@@ -3,6 +3,21 @@ from tensorflow.keras.layers import StringLookup
 import config
 
 
+def _remap_image_path(raw_path: str) -> str:
+    """Chuyển đường dẫn cũ trong label file → đường dẫn thực tế.
+
+    Label files được tạo bởi download_data.py với đường dẫn tuyệt đối
+    của máy gốc (vd: /home/tudong/src/iam-dataset/train/train_0.png).
+    Hàm này trích xuất 2 thành phần cuối (split/filename) rồi ghép
+    với _DATA_DIR hiện tại → hoạt động dù chạy ở đâu.
+    """
+    import os
+    parts = raw_path.replace("\\", "/").split("/")
+    # 2 thành phần cuối: "train/train_0.png" hoặc "validation/validation_0.png"
+    relative = os.path.join(parts[-2], parts[-1])
+    return os.path.join(config._DATA_DIR, relative)
+
+
 def clean_labels(labels_filepath):
     image_paths = []
     labels = []
@@ -13,7 +28,7 @@ def clean_labels(labels_filepath):
                 continue
             parts = line.split("\t")
             if len(parts) == 2:
-                image_paths.append(parts[0])
+                image_paths.append(_remap_image_path(parts[0]))
                 labels.append(parts[1])
     return image_paths, labels
 
